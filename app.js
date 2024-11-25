@@ -2,7 +2,9 @@
 const express = require('express');
 const csrf = require('csurf')
 const path = require('path');
+const expressSession = require('express-session');
 
+const createSessionConfig = require('./config/session');
 //Import db object
 const db = require('./data/database');
 const addCsrfTokenMiddleware = require('./middlewares/csrf-token');
@@ -25,6 +27,8 @@ app.use(express.static('public'));
 
 app.use(express.urlencoded({extended: false}));
 
+const sesssionConfig = createSessionConfig();
+app.use(expressSession(sesssionConfig));
 //For CSRF!!!
 app.use(csrf());
 

@@ -1,8 +1,10 @@
 //Get express package
 const express = require('express');
+const csrf = require('csurf')
 
 //Import db object
-const db = require('./data/database')
+const db = require('./data/database');
+const addCsrfTokenMiddleware = require('./middlewares/csrf-token');
 const path = require('path');
 
 //Import Auth routes
@@ -19,6 +21,12 @@ app.set('views',path.join(__dirname,'views'));
 app.use(express.static('public'));
 
 app.use(express.urlencoded({extended: false}));
+
+//For CSRF!!!
+app.use(csrf());
+
+//Use the csrf token middleware
+app.use(addCsrfTokenMiddleware)
 
 //register routes
 app.use(authRoutes);

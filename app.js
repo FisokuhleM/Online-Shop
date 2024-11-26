@@ -9,11 +9,12 @@ const createSessionConfig = require('./config/session');
 const db = require('./data/database');
 const addCsrfTokenMiddleware = require('./middlewares/csrf-token');
 const errorHandlerMiddleWare = require('./middlewares/error-handler');
-
-
-
+const checkAuthStatusMiddleware = require('./middlewares/check-auth');
 //Import Auth routes
 const authRoutes= require('./routes/auth.routes')
+
+const productRoutes = require('./routes/products.routes');
+const baseRoutes = require('./routes/base.routes');
 
 //Derive app object by executing express as a function
 const app = express();
@@ -34,9 +35,14 @@ app.use(csrf());
 
 //Use the csrf token middleware
 app.use(addCsrfTokenMiddleware)
+app.use(checkAuthStatusMiddleware);
 app.use(errorHandlerMiddleWare)
+
+
 //register routes
+app.use(baseRoutes);
 app.use(authRoutes);
+app.use(productRoutes);
 
 
 //Connect to the database

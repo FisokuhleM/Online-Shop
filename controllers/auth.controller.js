@@ -1,27 +1,46 @@
 const User = require('../models/user.model');
-const authUtil = require('../util/authentication')
-
+const authUtil = require('../util/authentication');
+const userDetailsAreValid = require('../util/validation');
+const validation = require('../util/validation');
 function getSignUp(req,res){
 res.render('customer/auth/signup');
 }
 
 //Function for creating user data
 async function signUp(req,res,next){
-    //Validate incoming user data
-    
+
+//Validate incoming user data
+if (!validation.userDetailsAreValid(
+        req.body.email,
+        req.body.password,
+        req.body.fullname,
+        req.body.street,
+        req.body.postal,
+        req.body.city
+      ) || !validation.emailIsConfirmed(req.body.email, req.body['confirm-email'])
+    ){
+    res.redirect('/signup');
+    return;
+}
     //Create user in the database
-   const user = new User(
-    req.body.email,
-    req.body.password,
-    req.body.fullname,
-    req.body.street,
-    req.body.postal,
-    req.body.city
-    );
+    const user = new User(
+        req.body.email,
+        req.body.password,
+        req.body.fullname,
+        req.body.street,
+        req.body.postal,
+        req.body.city
+        );
 
 
-    try{
-        await user.signup();
+try{
+    const existsAlready = await user.existsAlready();
+    if(existsAlready){
+        res.redirect('/signup')
+        return; 
+    }
+    
+    await user.signup();
     }catch(error){
         next(error);
         return;

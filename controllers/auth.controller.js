@@ -6,7 +6,7 @@ res.render('customer/auth/signup');
 }
 
 //Function for creating user data
-async function signUp(req,res){
+async function signUp(req,res,next){
     //Validate incoming user data
     
     //Create user in the database
@@ -18,7 +18,15 @@ async function signUp(req,res){
     req.body.postal,
     req.body.city
     );
-    await user.signup();
+
+
+    try{
+        await user.signup();
+    }catch(error){
+        next(error);
+        return;
+    }
+    
     res.redirect('/login');
 }
 
@@ -28,7 +36,14 @@ function getLogin(req,res){
 
 async function login (req,res){
 const user = new User(req.body.email, req.body.password);
-const existingUser = await user.getUserWithSameEmail();
+let existingUser;
+try{
+  existingUser = await user.getUserWithSameEmail();
+}catch(error){
+    next(error);
+    return;
+}
+
 //Check if the user exists
 if(!existingUser){
     //avoid executing any other code

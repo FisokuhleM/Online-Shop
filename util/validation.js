@@ -9,7 +9,7 @@ function userCredentialsAreValid(email,password){
     password.trim().length >= 6 
 }
 
-function userDetailsAreValid(email,password,street,postal,city){
+function userDetailsAreValid(name,email,password,street,postal,city){
 
     return (
    userCredentialsAreValid(email,password)&& 

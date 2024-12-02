@@ -30,8 +30,42 @@ try{
     res.redirect('/admin/products');
 }
 
+
+async function getUpdateProduct(req,res){
+try{
+  const product = await Product.findById(req.params.id) 
+  res.render('admin/product/update-product', {product:product})
+}catch(error){
+    next(error);
+}
+
+}
+
+async function updateProduct(req,res){
+    const product =new Product({
+        ...req.body,
+        _id: req.params.id
+    });
+
+    if(req.file){
+    //Replacce the old image with the new one
+    product.replaceImage(req.file.filename);
+    }
+
+    try{
+        await product.save()
+
+    }catch(error){
+      next(error);
+      return
+    }
+}
+
+
 module.exports = {
     getProducts:getProducts,
     getNewProduct:getNewProduct,
-    createNewProduct:createNewProduct
+    createNewProduct:createNewProduct,
+    getUpdateProduct:getUpdateProduct,
+    updateProduct:updateProduct
 }

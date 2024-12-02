@@ -1,5 +1,5 @@
 const db = require('../data/database');
-
+const mongodb = require('mongodb')
 class Product{
     constructor(productData){
         this.title= productData.title;
@@ -9,9 +9,28 @@ class Product{
         this.image = productData.image; //This would be the name of the image
         this.imagePath = `product-data/images/${this.image}`;
         this.imageUrl = `/products/assets/images/${productData.image}`;
+        this.updateImageData();
         if(productData._id){
             this.id = productData._id.toString();
         }
+    }
+
+    static async findById(productId){
+       let prodId;
+        try{
+         prodId = new mongodb.ObjectId(productId);
+       }
+       catch(error){
+        error.code = 404;
+        throw error;
+       }
+        const product = await db.getDb().collection('products').findOne({_id:prodId});
+            if(!product) {
+                const error = new Error('Could not find product with provided id');
+                error.code = 404;
+                throw error;
+            }
+        return new Product(product);
     }
 
 
@@ -23,6 +42,11 @@ class Product{
     });    
 }
 
+updateImageData(){
+    this.imagePath = `product-data/images/${this.image}`
+    this.imageUrl=`/products/assets/images/${this.image}`;
+}
+
     async save(){
         const productData = {
             title: this.title,
@@ -31,7 +55,27 @@ class Product{
             description: this.description,
             image: this.image
         };
-       const result = await db.getDb().collection('products').insertOne(productData);
+
+        if(this.id){
+            const productId = new mongodb.ObjectId(this.id);
+
+           if(!this.image){
+            delete productData.image;
+           }
+
+          await db.getDb().collection('products').updateOne(
+                {_id:productId}, 
+                {
+                    $set: productData, 
+                });
+        }else{
+           await db.getDb().collection('products').insertOne(productData);
+        }
+    }
+
+    async replaceImage(newImage) {
+        this.image = newImage;
+        this.updateImageData();
     }
 }
 

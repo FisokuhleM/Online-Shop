@@ -10,6 +10,7 @@ const db = require('./data/database');
 const addCsrfTokenMiddleware = require('./middlewares/csrf-token');
 const errorHandlerMiddleWare = require('./middlewares/error-handler');
 const checkAuthStatusMiddleware = require('./middlewares/check-auth');
+const protectRoutesMiddleware = require('./middlewares/protect-routes')
 //Import Auth routes
 const authRoutes= require('./routes/auth.routes')
 
@@ -39,15 +40,19 @@ app.use(csrf());
 //Use the csrf token middleware
 app.use(addCsrfTokenMiddleware)
 app.use(checkAuthStatusMiddleware);
-app.use(errorHandlerMiddleWare)
+
+
 
 
 //register routes
 app.use(baseRoutes);
 app.use(authRoutes);
 app.use(productRoutes);
+app.use(protectRoutesMiddleware);
 app.use('/admin',adminRoutes);
 
+//Make sure that it is placed after the routes are registered!!
+app.use(errorHandlerMiddleWare)
 
 //Connect to the database
 db.connectToDatabase()

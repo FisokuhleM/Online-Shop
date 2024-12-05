@@ -31,7 +31,7 @@ try{
 }
 
 
-async function getUpdateProduct(req,res){
+async function getUpdateProduct(req,res,next){
 try{
   const product = await Product.findById(req.params.id) 
   res.render('admin/product/update-product', {product:product})
@@ -41,7 +41,7 @@ try{
 
 }
 
-async function updateProduct(req,res){
+async function updateProduct(req,res,next){
     const product =new Product({
         ...req.body,
         _id: req.params.id
@@ -57,8 +57,10 @@ async function updateProduct(req,res){
 
     }catch(error){
       next(error);
-      return
+      return;
     }
+
+    res.redirect('/admin/products');
 }
 
 async function deleteProduct(req,res,next){

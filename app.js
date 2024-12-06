@@ -11,6 +11,7 @@ const addCsrfTokenMiddleware = require('./middlewares/csrf-token');
 const errorHandlerMiddleWare = require('./middlewares/error-handler');
 const checkAuthStatusMiddleware = require('./middlewares/check-auth');
 const protectRoutesMiddleware = require('./middlewares/protect-routes')
+const cartMiddleware = require('./middlewares/cart');
 //Import Auth routes
 const authRoutes= require('./routes/auth.routes')
 
@@ -36,6 +37,8 @@ const sesssionConfig = createSessionConfig();
 app.use(expressSession(sesssionConfig));
 //For CSRF!!!
 app.use(csrf());
+
+app.use(cartMiddleware);
 
 //Use the csrf token middleware
 app.use(addCsrfTokenMiddleware)

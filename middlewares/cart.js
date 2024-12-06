@@ -9,6 +9,9 @@ function initializeCart(req,res,next){
     }
 
     res.locals.cart = cart;
+
+
+    next();
 }
 
-module.export = initializeCart;
+module.exports = initializeCart;

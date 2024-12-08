@@ -1,7 +1,8 @@
+const path = require('path');
+
 //Get express package
 const express = require('express');
 const csrf = require('csurf')
-const path = require('path');
 const expressSession = require('express-session');
 
 const createSessionConfig = require('./config/session');
@@ -10,7 +11,7 @@ const db = require('./data/database');
 const addCsrfTokenMiddleware = require('./middlewares/csrf-token');
 const errorHandlerMiddleWare = require('./middlewares/error-handler');
 const checkAuthStatusMiddleware = require('./middlewares/check-auth');
-const protectRoutesMiddleware = require('./middlewares/protect-routes')
+const protectRoutesMiddleware = require('./middlewares/protect-routes');
 const cartMiddleware = require('./middlewares/cart');
 //Import Auth routes
 const authRoutes= require('./routes/auth.routes')
@@ -18,7 +19,7 @@ const authRoutes= require('./routes/auth.routes')
 const productRoutes = require('./routes/products.routes');
 const baseRoutes = require('./routes/base.routes');
 const adminRoutes = require('./routes/admin.routes');
-
+const cartRoutes = require('./routes/cart.routes');
 
 //Derive app object by executing express as a function
 const app = express();
@@ -30,10 +31,11 @@ app.set('views',path.join(__dirname,'views'));
 
 app.use(express.static('public'));
 app.use('/products/assets',express.static('product-data'));
-
 app.use(express.urlencoded({extended: false}));
+app.use(express.json());
 
 const sesssionConfig = createSessionConfig();
+
 app.use(expressSession(sesssionConfig));
 //For CSRF!!!
 app.use(csrf());
@@ -51,6 +53,7 @@ app.use(checkAuthStatusMiddleware);
 app.use(baseRoutes);
 app.use(authRoutes);
 app.use(productRoutes);
+app.use('/cart',cartRoutes);
 app.use(protectRoutesMiddleware);
 app.use('/admin',adminRoutes);
 

@@ -1,24 +1,26 @@
 const Product = require('../models/product.model');
 
-async function addCartItem(req,res){
-    let product;
-    try{
-      product = await Product.findAll(req.body.productId);
-    }catch(error){
-        next(error);
-        return;
-    }
-    
-    const cart = res.locals.cart;
-    res.locals.cart.addItem(product);
-    req.session.cart = cart;
+async function addCartItem(req, res, next) {
+  let product;
+  try {
+    product = await Product.findById(req.body.productId);
+  } catch (error) {
+    console.log(req.body.productId)
+    next(error);
+    return;
+  }
 
-    res.status(201).json({
-        message:'Cart Updated',
-        newTotalItems: cart.totalQuantity
-    });
+  const cart = res.locals.cart;
+
+  cart.addItem(product);
+  req.session.cart = cart;
+
+  res.status(201).json({
+    message: 'Cart updated!',
+    newTotalItems: cart.totalQuantity
+  });
 }
-
+ 
 module.exports = {
-    addCartItem: addCartItem
+  addCartItem: addCartItem,
 };

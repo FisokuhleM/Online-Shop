@@ -1,11 +1,14 @@
 const Product = require('../models/product.model');
 
+function getCart(req,res){
+  res.render('customer/cart/cart');
+}
+
 async function addCartItem(req, res, next) {
   let product;
   try {
     product = await Product.findById(req.body.productId);
   } catch (error) {
-    console.log(req.body.productId)
     next(error);
     return;
   }
@@ -20,7 +23,8 @@ async function addCartItem(req, res, next) {
     newTotalItems: cart.totalQuantity
   });
 }
- 
+
 module.exports = {
   addCartItem: addCartItem,
+  getCart: getCart
 };

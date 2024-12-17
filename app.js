@@ -13,6 +13,8 @@ const errorHandlerMiddleWare = require('./middlewares/error-handler');
 const checkAuthStatusMiddleware = require('./middlewares/check-auth');
 const protectRoutesMiddleware = require('./middlewares/protect-routes');
 const cartMiddleware = require('./middlewares/cart');
+const updateCartPricesMiddleware= require('./middlewares/update-cart-prices');
+const notFoundMiddleware = require('./middlewares/not-found');
 //Import Auth routes
 const authRoutes= require('./routes/auth.routes')
 
@@ -44,8 +46,9 @@ app.use(csrf());
 app.use(cartMiddleware);
 
 //Use the csrf token middleware
-app.use(addCsrfTokenMiddleware)
+app.use(addCsrfTokenMiddleware);
 app.use(checkAuthStatusMiddleware);
+app.use(updateCartPricesMiddleware);
 
 
 
@@ -55,9 +58,10 @@ app.use(baseRoutes);
 app.use(authRoutes);
 app.use(productRoutes);
 app.use('/cart',cartRoutes);
-app.use(protectRoutesMiddleware);
-app.use('/orders',ordersRoutes);
-app.use('/admin',adminRoutes);
+app.use('/orders',protectRoutesMiddleware,ordersRoutes);
+app.use('/admin',protectRoutesMiddleware,adminRoutes);
+app.use(notFoundMiddleware);
+
 
 //Make sure that it is placed after the routes are registered!!
 app.use(errorHandlerMiddleWare)
